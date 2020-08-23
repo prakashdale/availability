@@ -1,0 +1,11 @@
+@url = "http://localhost:6002"
+@resourceId = 00000000-0000-0000-0000-000000000001
+@tags = ["vehicles", "armors"]
+###
+POST {{url}}/api/resources
+Content-Type: application/json
+
+{
+    "resourceId": "{{resourceId}}"
+}
+###
