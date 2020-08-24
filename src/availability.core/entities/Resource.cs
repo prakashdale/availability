@@ -10,11 +10,11 @@ namespace availability.core.entities{
         private ISet<Reservation> _reservations = new HashSet<Reservation>();
         public IEnumerable<string> Tags {
             get => _tags;
-            private set => new HashSet<string>(value);
+            private set => _tags = new HashSet<string>(value);
         }
         public IEnumerable<Reservation> Reservations {
             get => _reservations;
-            private set => new HashSet<Reservation>(value);
+            private set => _reservations = new HashSet<Reservation>(value);
         }
 
         public Resource(AggregateId id, IEnumerable<string> tags, IEnumerable<Reservation> reservations = null, int version = 0)
@@ -42,6 +42,26 @@ namespace availability.core.entities{
             var resource = new Resource(id, tags, reservations);
             resource.AddEvent(new ResourceCreated(resource));
             return resource;
+        }
+
+        public void AddReservation(Reservation reservation) {
+            bool hasTheSameReservationSlot(Reservation r) => r.From == reservation.From.ToUniversalTime();
+            var hasCollidingReservation = _reservations.Any(hasTheSameReservationSlot);
+            if(hasCollidingReservation) {
+                var collidingReservation = _reservations.First(hasTheSameReservationSlot);
+                if(collidingReservation.Priority >= reservation.Priority) {
+                    throw new CannotExpropriateReservationException(reservation.Priority, reservation.From, reservation.To);
+                }
+
+                if(_reservations.Remove(reservation)) {
+                   AddEvent(new ReservationCancelled(this, collidingReservation)); 
+                }
+            }
+
+            if (_reservations.Add(reservation)) {
+                AddEvent(new ReservationAdded(this, reservation));
+            }
+            
         }
 
     }

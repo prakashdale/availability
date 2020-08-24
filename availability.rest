@@ -1,11 +1,28 @@
-@url = "http://localhost:6002"
+@localurl = http://localhost:6002
 @resourceId = 00000000-0000-0000-0000-000000000001
 @tags = ["vehicles", "armors"]
+
 ###
-POST {{url}}/api/resources
+POST {{localurl}}/resources/
 Content-Type: application/json
 
 {
-    "resourceId": "{{resourceId}}"
+    "resourceId": "{{resourceId}}",
+    "tags": {{tags}}
+}
+
+###
+###
+GET {{localurl}}/resources/{{resourceId}}
+###
+
+###
+POST {{localurl}}/resources/{{resourceId}}/reserve-resource
+Content-Type: application/json
+
+{
+    "resourceId": "{{resourceId}}",
+    "from": "08/26/2020",
+    "to": "08/27/2020"
 }
 ###

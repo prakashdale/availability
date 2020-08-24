@@ -1,11 +1,13 @@
 using System;
 using availability.core.repositories;
+using availability.infrastructure.exceptions;
 using availability.infrastructure.mongo.documents;
 using availability.infrastructure.mongo.repositories;
 using Convey;
 using Convey.CQRS.Commands;
 using Convey.CQRS.Queries;
 using Convey.Persistence.MongoDB;
+using Convey.WebApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +18,7 @@ namespace availability.infrastructure.mongo {
             
 
             builder
+            .AddErrorHandler<ExceptionResponseMapper>()
             .AddQueryHandlers()
             .AddInMemoryQueryDispatcher()
             .AddMongo()
@@ -26,6 +29,7 @@ namespace availability.infrastructure.mongo {
 
         public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app){
             app
+                .UseErrorHandler()
                 .UseConvey();
                 
 

@@ -5,9 +5,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Convey" Version="0.4.*" />
+        
         <PackageReference Include="Convey.Secrets.Vault" Version="0.4.*" />
-        <PackageReference Include="Convey.CQRS.Queries" Version="0.4.*" />
+        
         <PackageReference Include="Convey.Discovery.Consul" Version="0.4.*" />
         <PackageReference Include="Convey.LoadBalancing.Fabio" Version="0.4.*" />
         <PackageReference Include="Convey.HTTP" Version="0.4.*" />
@@ -31,6 +31,8 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\..\snatch-dev\Convey\src\Convey\src\Convey\Convey.csproj" />
+      <ProjectReference Include="..\..\..\..\snatch-dev\Convey\src\Convey.CQRS.Queries\src\Convey.CQRS.Queries\Convey.CQRS.Queries.csproj" />
       <ProjectReference Include="..\availability.application\availability.application.csproj" />
     </ItemGroup>
 

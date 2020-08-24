@@ -5,15 +5,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Convey" Version="0.4.*" />
-        <PackageReference Include="Convey.CQRS.Commands" Version="0.4.*" />
-        <PackageReference Include="Convey.CQRS.Events" Version="0.4.*" />
-        <PackageReference Include="Convey.CQRS.Queries" Version="0.4.*" />
-        <PackageReference Include="Convey.MessageBrokers" Version="0.4.*" />
+        
         <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.3" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\..\snatch-dev\Convey\src\Convey\src\Convey\Convey.csproj" />
+        <ProjectReference Include="..\..\..\..\snatch-dev\Convey\src\Convey.CQRS.Commands\src\Convey.CQRS.Commands\Convey.CQRS.Commands.csproj" />
+        <ProjectReference Include="..\..\..\..\snatch-dev\Convey\src\Convey.CQRS.Events\src\Convey.CQRS.Events\Convey.CQRS.Events.csproj" />
+        <ProjectReference Include="..\..\..\..\snatch-dev\Convey\src\Convey.CQRS.Queries\src\Convey.CQRS.Queries\Convey.CQRS.Queries.csproj" />
+        <ProjectReference Include="..\..\..\..\snatch-dev\Convey\src\Convey.MessageBrokers\src\Convey.MessageBrokers\Convey.MessageBrokers.csproj" />
       <ProjectReference Include="..\availability.core\availability.core.csproj" />
     </ItemGroup>
 

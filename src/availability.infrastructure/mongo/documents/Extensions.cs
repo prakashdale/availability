@@ -7,7 +7,7 @@ namespace availability.infrastructure.mongo.documents {
     internal static class Extensions{
         public static Resource AsEntity(this ResourceDocument document) 
         => new Resource(document.Id, document.Tags, 
-        document.Reservations?.Select(x => new Reservation(x.From, x.To, x.Priority)));
+        document.Reservations?.Select(x => new Reservation(x.From, x.To, x.Priority)), document.Version);
 
         public static ResourceDocument AsDocument(this Resource resource)
         => new ResourceDocument{

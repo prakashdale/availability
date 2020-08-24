@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using availability.application.commands;
 using availability.application.dto;
@@ -19,9 +20,11 @@ namespace availability.api.Controllers{
             _queryDispatcher = queryDispatcher;
         }
 
-        [HttpGet("{resourceId:guid}")]
-        public async Task<ActionResult<ResourceDto>> Get(GetResource query) {
-            var resource = await _queryDispatcher.QueryAsync(query);
+        [HttpGet("{resourceId}")]
+        public async Task<ActionResult<ResourceDto>> Get(string resourceId) {
+            var resource = await _queryDispatcher.QueryAsync(new GetResource{
+                ResourceId = Guid.Parse(resourceId)
+            });
 
             if (resource is {}) {
                 return resource;
