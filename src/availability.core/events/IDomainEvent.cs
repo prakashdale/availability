@@ -1,5 +1,6 @@
-namespace availability.core.events {
-    public interface IDomainEvent {
-        
+namespace availability.core.events
+{
+    public interface IDomainEvent
+    {
     }
 }

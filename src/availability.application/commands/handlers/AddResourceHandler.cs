@@ -1,32 +1,32 @@
-
 using System.Threading.Tasks;
-using availability.application.events;
-using availability.application.exceptions;
 using availability.application.services;
-using availability.core.entities;
+using availability.application.exceptions;
 using availability.core.repositories;
 using Convey.CQRS.Commands;
+using availability.core.entities;
 
-namespace availability.application.commands.handlers {
+namespace availability.application.commands.handlers
+{
     internal sealed class AddResourceHandler : ICommandHandler<AddResource>
     {
-        private readonly IResourceRepository _resourceRepository;
+        private readonly IResourcesRepository _repository;
         private readonly IEventProcessor _eventProcessor;
 
-        public AddResourceHandler(IResourceRepository resourceRepository, IEventProcessor eventProcessor)
+        public AddResourceHandler(IResourcesRepository repository, IEventProcessor eventProcessor)
         {
-            _resourceRepository = resourceRepository;
-            _eventProcessor = eventProcessor;            
+            _repository = repository;
+            _eventProcessor = eventProcessor;
         }
+        
         public async Task HandleAsync(AddResource command)
         {
-            var resource = await _resourceRepository.GetAsync(command.ResourceId);
-            if (resource is {}) {
+            if (await _repository.ExistsAsync(command.ResourceId))
+            {
                 throw new ResourceAlreadyExistsException(command.ResourceId);
             }
-
-            resource = Resource.Create(command.ResourceId, command.Tags);
-            await _resourceRepository.AddAsync(resource);
+            
+            var resource = Resource.Create(command.ResourceId, command.Tags);
+            await _repository.AddAsync(resource);
             await _eventProcessor.ProcessAsync(resource.Events);
         }
     }

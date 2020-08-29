@@ -1,19 +1,22 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Convey;
-using availability.application;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
-using availability.infrastructure;
+using Convey.Secrets.Vault;
+using Convey.Logging;
+using Convey.Types;
 using Convey.WebApi;
 using Convey.WebApi.CQRS;
-using availability.application.queries;
-using availability.application.dto;
-using System.Collections.Generic;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using availability.application;
 using availability.application.commands;
+using availability.application.dto;
+using availability.application.queries;
+using availability.infrastructure;
 
-namespace availability.api
+namespace Pacco.Services.Availability.Api
 {
     public class Program
     {
@@ -24,25 +27,24 @@ namespace availability.api
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
             => WebHost.CreateDefaultBuilder(args)
-                .ConfigureServices(services => {
-                    
-                    services
+                .ConfigureServices(services => services
                     .AddConvey()
                     .AddWebApi()
                     .AddApplication()
                     .AddInfrastructure()
-                    .Build();
-                })
-                .Configure(app => {
-                    app
-                        .UseInfrastructure()
-                        .UseDispatcherEndpoints(endpoints => 
-                            endpoints
-                                .Get<GetResources, IEnumerable<ResourceDto>>("resources")                                
-                                .Get<GetResource, ResourceDto>("resources/{resourceid}")
-                                .Post<AddResource>("resources", afterDispatch: (cmd, ctx) => ctx.Response.Created($"resources/{cmd.ResourceId}"))                                
-                                .Post<ReserveResource>("resources/{resourceid}/reserve-resource/")
-                        );                       
-                });
+                    .Build())
+                .Configure(app => app
+                    .UseInfrastructure()
+                    .UseDispatcherEndpoints(endpoints => endpoints
+                        .Get("", ctx => ctx.Response.WriteAsync(ctx.RequestServices.GetService<AppOptions>().Name))
+                        .Get<GetResources, IEnumerable<ResourceDto>>("resources")
+                        .Get<GetResource, ResourceDto>("resources/{resourceId}")
+                        .Post<AddResource>("resources",
+                            afterDispatch: (cmd, ctx) => ctx.Response.Created($"resources/{cmd.ResourceId}"))
+                        .Post<ReserveResource>("resources/{resourceId}/reservations/{dateTime}")
+                        .Delete<ReleaseResourceReservation>("resources/{resourceId}/reservations/{dateTime}")
+                        .Delete<DeleteResource>("resources/{resourceId}")))
+                .UseLogging()
+                .UseVault();
     }
 }

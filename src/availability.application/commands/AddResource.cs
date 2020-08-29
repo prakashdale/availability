@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Convey.CQRS.Commands;
 
-namespace availability.application.commands {
+namespace availability.application.commands
+{
     [Contract]
-    public class AddResource: ICommand {
-        public Guid ResourceId {get;}
-        public IEnumerable<string> Tags{get;}
+    public class AddResource : ICommand
+    {
+        public Guid ResourceId { get; }
+        public IEnumerable<string> Tags { get; }
+
         public AddResource(Guid resourceId, IEnumerable<string> tags)
-        {
-            ResourceId = resourceId;
-            Tags = tags;
-        }
+            => (ResourceId, Tags) = (resourceId == Guid.Empty ? Guid.NewGuid() : resourceId,
+                tags ?? Enumerable.Empty<string>());
     }
 }

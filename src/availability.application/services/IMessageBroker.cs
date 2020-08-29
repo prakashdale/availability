@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Convey.CQRS.Events;
 
-namespace availability.application.services {
+namespace availability.application.services
+{
     public interface IMessageBroker
     {
         Task PublishAsync(params IEvent[] events);

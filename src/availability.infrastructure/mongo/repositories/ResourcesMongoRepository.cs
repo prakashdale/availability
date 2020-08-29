@@ -1,31 +1,37 @@
 using System;
 using System.Threading.Tasks;
+using Convey.Persistence.MongoDB;
+using MongoDB.Driver;
 using availability.core.entities;
 using availability.core.repositories;
 using availability.infrastructure.mongo.documents;
-using Convey.Persistence.MongoDB;
 
-namespace availability.infrastructure.mongo.repositories {
-    internal sealed class ResourcesMongoRepository : IResourceRepository
+namespace availability.infrastructure.mongo.repositories
+{
+    internal sealed class ResourcesMongoRepository : IResourcesRepository
     {
-        private readonly IMongoRepository<ResourceDocument, Guid> _repo;
+        private readonly IMongoRepository<ResourceDocument, Guid> _repository;
 
-        public ResourcesMongoRepository(IMongoRepository<ResourceDocument, Guid> repo) => _repo = repo;
-        public async Task AddAsync(Resource resource)
-        => await _repo.AddAsync(resource.AsDocument());
-
-        public async Task DeleteAsync(AggregateId id)
-        => await _repo.DeleteAsync(id);
+        public ResourcesMongoRepository(IMongoRepository<ResourceDocument, Guid> repository)
+            => _repository = repository;
 
         public async Task<Resource> GetAsync(AggregateId id)
         {
-            var doc = await _repo.GetAsync(id);
-            return doc?.AsEntity();
+            var document = await _repository.GetAsync(r => r.Id == id);
+            return document?.AsEntity();
         }
 
-        public async Task UpdateAsync(Resource resource)
-        => await _repo.UpdateAsync(resource.AsDocument(), x => x.Id == resource.Id && x.Version < resource.Version );
+        public Task<bool> ExistsAsync(AggregateId id)
+            => _repository.ExistsAsync(r => r.Id == id);
 
+        public Task AddAsync(Resource resource)
+            => _repository.AddAsync(resource.AsDocument());
+
+        public Task UpdateAsync(Resource resource)
+            => _repository.Collection.ReplaceOneAsync(r => r.Id == resource.Id && r.Version < resource.Version,
+                resource.AsDocument());
+
+        public Task DeleteAsync(AggregateId id)
+            => _repository.DeleteAsync(id);
     }
-
 }

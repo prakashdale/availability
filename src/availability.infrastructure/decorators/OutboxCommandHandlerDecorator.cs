@@ -3,36 +3,33 @@ using System.Threading.Tasks;
 using Convey.CQRS.Commands;
 using Convey.MessageBrokers;
 using Convey.MessageBrokers.Outbox;
-using Convey.Types;
 
-namespace availability.infrastructure.decorators {
-    
-    [Decorator]
-    internal sealed class OutboxCommandHandlerDecorator<T> : ICommandHandler<T> where T : class, ICommand
+namespace availability.infrastructure.decorators
+{
+    internal sealed class OutboxCommandHandlerDecorator<TCommand> : ICommandHandler<TCommand>
+        where TCommand : class, ICommand
     {
-        private readonly ICommandHandler<T> _handler;
+        private readonly ICommandHandler<TCommand> _handler;
         private readonly IMessageOutbox _outbox;
-        private readonly bool _enabled;
         private readonly string _messageId;
+        private readonly bool _enabled;
 
-        public OutboxCommandHandlerDecorator(ICommandHandler<T> handler, 
-        OutboxOptions outboxOptions,
-        IMessageOutbox outbox,
-        IMessagePropertiesAccessor messagePropertiesAccessor)
+        public OutboxCommandHandlerDecorator(ICommandHandler<TCommand> handler, IMessageOutbox outbox,
+            OutboxOptions outboxOptions, IMessagePropertiesAccessor messagePropertiesAccessor)
         {
             _handler = handler;
             _outbox = outbox;
             _enabled = outboxOptions.Enabled;
+
             var messageProperties = messagePropertiesAccessor.MessageProperties;
             _messageId = string.IsNullOrWhiteSpace(messageProperties?.MessageId)
                 ? Guid.NewGuid().ToString("N")
                 : messageProperties.MessageId;
         }
-        
-        public Task HandleAsync(T command)
-        => _enabled
-            ? _outbox.HandleAsync(_messageId, () => _handler.HandleAsync(command))
-            : _handler.HandleAsync(command);
-    }
 
+        public Task HandleAsync(TCommand command)
+            => _enabled
+                ? _outbox.HandleAsync(_messageId, () => _handler.HandleAsync(command))
+                : _handler.HandleAsync(command);
+    }
 }

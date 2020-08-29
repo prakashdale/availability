@@ -1,23 +1,22 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 
-namespace availability.core.valueObjects{
-    public struct Reservation: IEquatable<Reservation> {
-        public DateTime From {get;}
-        public DateTime To {get;}
-        public int Priority {get;}
-        public Reservation(DateTime from, DateTime to, int priority) 
-        => (From, To, Priority) = ( from, to, priority);
+namespace availability.core.valueObjects
+{
+    public struct Reservation : IEquatable<Reservation>
+    {
+        public DateTime DateTime { get; }
+        public int Priority { get; }
 
-        public bool Equals([AllowNull] Reservation other)
-        {
-            return this.From.Equals(other.From) && this.To.Equals(other.To) && this.Priority == other.Priority;
-        }
+        public Reservation(DateTime dateTime, int priority)
+            => (DateTime, Priority) = (dateTime, priority);
+        
+        public bool Equals(Reservation reservation)
+            => Priority.Equals(reservation.Priority) && DateTime.Date.Equals(reservation.DateTime.Date);
 
-        public override bool Equals([AllowNull]object obj) 
-        => obj is Reservation reservation && Equals(reservation);
-
+        public override bool Equals(object obj)
+            => obj is Reservation reservation && Equals(reservation);
+        
         public override int GetHashCode()
-        => HashCode.Combine(From, To, Priority);
+            => DateTime.Date.GetHashCode();
     }
 }

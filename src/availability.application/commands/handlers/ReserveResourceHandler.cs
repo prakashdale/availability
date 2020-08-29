@@ -1,33 +1,60 @@
-
 using System.Threading.Tasks;
+using Convey.CQRS.Commands;
 using availability.application.exceptions;
 using availability.application.services;
-using availability.core.entities;
+
 using availability.core.repositories;
 using availability.core.valueObjects;
-using Convey.CQRS.Commands;
+using availability.application.commands;
+using availability.application.services.clients;
+using availability.application;
 
-namespace availability.application.commands.handlers {
+namespace availability.mands.Handlers
+{
     internal sealed class ReserveResourceHandler : ICommandHandler<ReserveResource>
     {
-        private readonly IResourceRepository _resourceRepository;
+        private readonly IResourcesRepository _repository;
+        private readonly ICustomersServiceClient _customersServiceClient;
         private readonly IEventProcessor _eventProcessor;
+        private readonly IAppContext _appContext;
 
-        public ReserveResourceHandler(IResourceRepository resourceRepository, IEventProcessor eventProcessor)
+        public ReserveResourceHandler(IResourcesRepository repository, ICustomersServiceClient customersServiceClient,
+            IEventProcessor eventProcessor, IAppContext appContext)
         {
-            _resourceRepository = resourceRepository;
+            _repository = repository;
+            _customersServiceClient = customersServiceClient;
             _eventProcessor = eventProcessor;
+            _appContext = appContext;
         }
+
         public async Task HandleAsync(ReserveResource command)
         {
-            var resource = await _resourceRepository.GetAsync(command.ResourceId);
-            if (resource is null) {
+            var identity = _appContext.Identity;
+            if (identity.IsAuthenticated && identity.Id != command.CustomerId && !identity.IsAdmin)
+            {
+                throw new UnauthorizedResourceAccessException(command.ResourceId, identity.Id);
+            }
+
+            var resource = await _repository.GetAsync(command.ResourceId);
+            if (resource is null)
+            {
                 throw new ResourceNotFoundException(command.ResourceId);
             }
 
-            var reservation = new Reservation(command.From, command.To, command.Priority);
+            var customerState = await _customersServiceClient.GetStateAsync(command.CustomerId);
+            if (customerState is null)
+            {
+                throw new CustomerNotFoundException(command.CustomerId);
+            }
+
+            if (!customerState.IsValid)
+            {
+                throw new InvalidCustomerStateException(command.ResourceId, customerState?.State);
+            }
+
+            var reservation = new Reservation(command.DateTime, command.Priority);
             resource.AddReservation(reservation);
-            await _resourceRepository.UpdateAsync(resource);
+            await _repository.UpdateAsync(resource);
             await _eventProcessor.ProcessAsync(resource.Events);
         }
     }

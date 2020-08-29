@@ -1,14 +1,12 @@
-using System;
 using System.Collections.Generic;
-using availability.application.dto;
 using Convey.CQRS.Queries;
+using availability.application.dto;
 
-namespace availability.application.queries {
-    public class GetResources: IQuery<IEnumerable<ResourceDto>>{
-        public IEnumerable<string> Tags {get; set;}
-        public bool MatchAllTags {get;set;}
-
-
+namespace availability.application.queries
+{
+    public class GetResources : IQuery<IEnumerable<ResourceDto>>
+    {
+        public IEnumerable<string> Tags { get; set; }
+        public bool MatchAllTags { get; set; }
     }
-
 }

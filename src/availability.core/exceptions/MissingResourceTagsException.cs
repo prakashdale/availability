@@ -1,9 +1,10 @@
-using System;
-
-namespace availability.core.exceptions {
+namespace availability.core.exceptions
+{
     public class MissingResourceTagsException : DomainException
     {
-        public MissingResourceTagsException() : base("Missing tag for Resource")
+        public override string Code { get; } = "missing_resource_tags";
+        
+        public MissingResourceTagsException() : base("Resource tags are missing.")
         {
         }
     }

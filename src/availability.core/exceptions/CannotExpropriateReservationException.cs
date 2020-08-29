@@ -1,12 +1,15 @@
 using System;
 
-namespace availability.core.exceptions {
+namespace availability.core.exceptions
+{
     public class CannotExpropriateReservationException : DomainException
     {
-        public Guid ResourceId {get;}
-        public CannotExpropriateReservationException(Guid resourceId, int priority, DateTime from, DateTime to) : base($"Reservation with priority '{priority}' already exests for the date '{from.Date}'")
-        {
-            ResourceId = resourceId;
-        }
+        public override string Code { get; } = "cannot_expropriate_reservation";
+        public Guid ResourceId { get; }
+        public DateTime DateTime { get; }
+
+        public CannotExpropriateReservationException(Guid resourceId, DateTime dateTime)
+            : base($"Cannot expropriate resource {resourceId} reservation at {dateTime}")
+            => (ResourceId, DateTime) = (resourceId, dateTime);
     }
 }

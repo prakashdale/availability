@@ -1,11 +1,11 @@
 using System;
-using availability.application.dto;
 using Convey.CQRS.Queries;
+using availability.application.dto;
 
-namespace availability.application.queries {
-    public class GetResource: IQuery<ResourceDto>{
-        public Guid ResourceId{get;set;}
-
+namespace availability.application.queries
+{
+    public class GetResource : IQuery<ResourceDto>
+    {
+        public Guid ResourceId { get; set; }
     }
-
 }
