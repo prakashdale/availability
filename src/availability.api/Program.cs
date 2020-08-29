@@ -25,9 +25,7 @@ namespace availability.api
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
             => WebHost.CreateDefaultBuilder(args)
                 .ConfigureServices(services => {
-                    services
-                        .AddControllers()
-                        .AddNewtonsoftJson();
+                    
                     services
                     .AddConvey()
                     .AddWebApi()

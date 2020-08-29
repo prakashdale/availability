@@ -3,14 +3,18 @@ using availability.application;
 using availability.application.events.external;
 using availability.application.services;
 using availability.core.repositories;
+using availability.infrastructure.decorators;
 using availability.infrastructure.exceptions;
 using availability.infrastructure.mongo.documents;
 using availability.infrastructure.mongo.repositories;
 using availability.infrastructure.services;
 using Convey;
 using Convey.CQRS.Commands;
+using Convey.CQRS.Events;
 using Convey.CQRS.Queries;
 using Convey.MessageBrokers.CQRS;
+using Convey.MessageBrokers.Outbox;
+using Convey.MessageBrokers.Outbox.Mongo;
 using Convey.MessageBrokers.RabbitMQ;
 using Convey.Persistence.MongoDB;
 using Convey.WebApi;
@@ -25,7 +29,8 @@ namespace availability.infrastructure {
             builder.Services.AddTransient<IMessageBroker, MessageBroker>();
             builder.Services.AddTransient<IEventMapper, EventMapper>();
             builder.Services.AddTransient<IEventProcessor, EventProcessor>();
-            
+            builder.Services.TryDecorate(typeof(ICommandHandler<>), typeof(OutboxCommandHandlerDecorator<>)); 
+            builder.Services.TryDecorate(typeof(IEventHandler<>), typeof(OutboxEventHandlerDecorator<>)); 
 
             builder
             .AddErrorHandler<ExceptionToResponseMapper>()
@@ -34,7 +39,8 @@ namespace availability.infrastructure {
             .AddMongo()
             .AddMongoRepository<ResourceDocument, Guid>("resources")
             .AddRabbitMq()
-            .AddExceptionToMessageMapper<ExceptionToMessageMapper>();
+            .AddExceptionToMessageMapper<ExceptionToMessageMapper>()
+            .AddMessageOutbox(o => o.AddMongo());
 
             return builder;
         }

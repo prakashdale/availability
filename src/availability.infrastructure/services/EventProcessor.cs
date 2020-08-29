@@ -11,7 +11,7 @@ namespace availability.infrastructure.services {
         private readonly IEventMapper _eventMapper;
         private readonly ILogger<EventProcessor> _logger;
 
-        public EventProcessor(IMessageBroker messageBroker, IEventMapper eventMapper, ILogger<EventProcessor> logger)
+        public EventProcessor(IMessageBroker messageBroker,  IEventMapper eventMapper, ILogger<EventProcessor> logger)
         {
             _messageBroker = messageBroker;
             _eventMapper = eventMapper;
@@ -32,11 +32,6 @@ namespace availability.infrastructure.services {
             _logger.LogTrace("Processing integration events...");
             var integrationEvents = _eventMapper.MapAll(events);
             await _messageBroker.PublishAsync(integrationEvents);
-            
-
-
-
-
         }
     }
 

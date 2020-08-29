@@ -1,21 +1,20 @@
 using System;
 using System.Threading.Tasks;
-using Convey.CQRS.Commands;
+using Convey.CQRS.Events;
 using Convey.MessageBrokers;
 using Convey.MessageBrokers.Outbox;
 using Convey.Types;
 
 namespace availability.infrastructure.decorators {
-    
     [Decorator]
-    internal sealed class OutboxCommandHandlerDecorator<T> : ICommandHandler<T> where T : class, ICommand
+    internal sealed class OutboxEventHandlerDecorator<T> : IEventHandler<T> where T : class, IEvent
     {
-        private readonly ICommandHandler<T> _handler;
+        private readonly IEventHandler<T> _handler;
         private readonly IMessageOutbox _outbox;
         private readonly bool _enabled;
         private readonly string _messageId;
 
-        public OutboxCommandHandlerDecorator(ICommandHandler<T> handler, 
+        public OutboxEventHandlerDecorator(IEventHandler<T> handler, 
         OutboxOptions outboxOptions,
         IMessageOutbox outbox,
         IMessagePropertiesAccessor messagePropertiesAccessor)
@@ -29,10 +28,10 @@ namespace availability.infrastructure.decorators {
                 : messageProperties.MessageId;
         }
         
-        public Task HandleAsync(T command)
+        public Task HandleAsync(T @event)
         => _enabled
-            ? _outbox.HandleAsync(_messageId, () => _handler.HandleAsync(command))
-            : _handler.HandleAsync(command);
+            ? _outbox.HandleAsync(_messageId, () => _handler.HandleAsync(@event))
+            : _handler.HandleAsync(@event);
     }
 
 }
