@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Convey.CQRS.Commands;
 
 namespace availability.application.commands {
+    [Contract]
     public class ReserveResource: ICommand {
         
         public Guid ResourceId{get;}

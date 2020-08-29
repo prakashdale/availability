@@ -5,7 +5,7 @@ using Convey;
 using availability.application;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
-using availability.infrastructure.mongo;
+using availability.infrastructure;
 using Convey.WebApi;
 using Convey.WebApi.CQRS;
 using availability.application.queries;

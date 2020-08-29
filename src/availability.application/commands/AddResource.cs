@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Convey.CQRS.Commands;
 
 namespace availability.application.commands {
+    [Contract]
     public class AddResource: ICommand {
         public Guid ResourceId {get;}
         public IEnumerable<string> Tags{get;}

@@ -50,7 +50,7 @@ namespace availability.core.entities{
             if(hasCollidingReservation) {
                 var collidingReservation = _reservations.First(hasTheSameReservationSlot);
                 if(collidingReservation.Priority >= reservation.Priority) {
-                    throw new CannotExpropriateReservationException(reservation.Priority, reservation.From, reservation.To);
+                    throw new CannotExpropriateReservationException(Id, reservation.Priority, reservation.From, reservation.To);
                 }
 
                 if(_reservations.Remove(reservation)) {

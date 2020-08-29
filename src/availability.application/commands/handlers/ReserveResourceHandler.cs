@@ -1,6 +1,7 @@
 
 using System.Threading.Tasks;
 using availability.application.exceptions;
+using availability.application.services;
 using availability.core.entities;
 using availability.core.repositories;
 using availability.core.valueObjects;
@@ -10,10 +11,12 @@ namespace availability.application.commands.handlers {
     internal sealed class ReserveResourceHandler : ICommandHandler<ReserveResource>
     {
         private readonly IResourceRepository _resourceRepository;
+        private readonly IEventProcessor _eventProcessor;
 
-        public ReserveResourceHandler(IResourceRepository resourceRepository)
+        public ReserveResourceHandler(IResourceRepository resourceRepository, IEventProcessor eventProcessor)
         {
             _resourceRepository = resourceRepository;
+            _eventProcessor = eventProcessor;
         }
         public async Task HandleAsync(ReserveResource command)
         {
@@ -25,6 +28,7 @@ namespace availability.application.commands.handlers {
             var reservation = new Reservation(command.From, command.To, command.Priority);
             resource.AddReservation(reservation);
             await _resourceRepository.UpdateAsync(resource);
+            await _eventProcessor.ProcessAsync(resource.Events);
         }
     }
 }

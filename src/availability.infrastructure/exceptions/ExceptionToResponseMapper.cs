@@ -7,7 +7,7 @@ using Convey;
 using Convey.WebApi.Exceptions;
 
 namespace availability.infrastructure.exceptions {
-    public class ExceptionResponseMapper : IExceptionToResponseMapper
+    public class ExceptionToResponseMapper : IExceptionToResponseMapper
     {
         private static readonly ConcurrentDictionary<Type, string> Codes = new ConcurrentDictionary<Type, string>();
         public ExceptionResponse Map(Exception exception)
